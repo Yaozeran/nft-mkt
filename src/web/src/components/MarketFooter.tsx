@@ -6,13 +6,13 @@
 import React from "react";
 
 
-const MartFooter: React.FC = () => {
+const MarketFooter: React.FC = () => {
   return (
-    <footer>
-
+    <footer style={{ textAlign: "center", padding: "1rem 2rem", borderTop: "1px solid #ccc" }}>
+      <p>NFT Marketplace</p>
     </footer>
   );
 };
 
 
-export default MartFooter;
+export default MarketFooter;

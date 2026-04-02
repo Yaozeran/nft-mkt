@@ -1,17 +1,11 @@
 /* Copyright (c) 2026 Yao Zeran
- * 
+ *
  * The marketplace component */
 
 import React, { useEffect, useState } from "react";
 
-import Web3 from "web3";
-
-import { 
-  contractABI as marketplaceABI, contractAddress as marketplaceAddress 
-} from "src/services/contracts/market";
-import { 
-  contractABI as nftABI, contractAddress as nftAddress 
-} from "src/services/contracts/nft";
+import { useWeb3 } from "src/contexts/Web3Context";
+import { contractAddress as nftAddress } from "src/services/contracts/nft";
 
 
 interface NFTItem {
@@ -24,44 +18,11 @@ interface NFTItem {
 
 const NonFungibleTokenMarket: React.FC = () => {
 
-  const [web3, setWeb3] = useState<Web3 | null>(null);
-  const [marketplace, setMarketplace] = useState<any>(null);
-  const [nftContract, setNftContract] = useState<any>(null);
-  const [account, setAccount] = useState<string>("");
+  const { web3, account, nftContract, marketplaceContract: marketplace } = useWeb3();
   const [nfts, setNfts] = useState<NFTItem[]>([]);
   const [tokenIdToList, setTokenIdToList] = useState("");
   const [priceToList, setPriceToList] = useState("");
-
-  useEffect(() => {
-
-    const init = async () => {
-      if (!window.ethereum) {
-        return alert("Install MetaMask");
-      }
-
-      const web3Instance = new Web3(window.ethereum);
-      await window.ethereum.request({ method: "eth_requestAccounts" });
-
-      const accounts = await web3Instance.eth.getAccounts();
-
-      const marketplaceInstance = new web3Instance.eth.Contract(
-        marketplaceABI as any,
-        marketplaceAddress
-      );
-
-      const nftInstance = new web3Instance.eth.Contract(
-        nftABI as any,
-        nftAddress
-      );
-
-      setWeb3(web3Instance);
-      setMarketplace(marketplaceInstance);
-      setNftContract(nftInstance);
-      setAccount(accounts[0]);
-    };
-
-    init();
-  }, []);
+  const [loading, setLoading] = useState(false);
 
   const fetchMetadata = async (tokenURI: string) => {
     try {
@@ -76,73 +37,98 @@ const NonFungibleTokenMarket: React.FC = () => {
 
     if (!marketplace || !nftContract) return;
 
+    setLoading(true);
     const items: NFTItem[] = [];
 
-    const totalSupply = await nftContract.methods._tokenIds().call().catch(() => 50);
+    try {
+      const totalSupply = await nftContract.methods.totalSupply().call();
 
-    for (let i = 1; i <= totalSupply; i++) {
-      try {
-        const listing = await marketplace.methods
-          .listings(nftAddress, i)
-          .call();
+      for (let i = 0; i < Number(totalSupply); i++) {
+        try {
+          const listing = await marketplace.methods
+            .listings(nftAddress, i)
+            .call();
 
-        if (listing.price > 0) {
-          const tokenURI = await nftContract.methods.tokenURI(i).call();
-          const metadata = await fetchMetadata(tokenURI);
+          if (listing.price > 0) {
+            const tokenURI = await nftContract.methods.tokenURI(i).call();
+            const metadata = await fetchMetadata(tokenURI);
 
-          items.push({
-            tokenId: i,
-            price: listing.price,
-            seller: listing.seller,
-            metadata,
-          });
-        }
-      } catch {}
+            items.push({
+              tokenId: i,
+              price: listing.price,
+              seller: listing.seller,
+              metadata,
+            });
+          }
+        } catch {}
+      }
+    } catch (err) {
+      console.error("Failed to load NFTs:", err);
+    } finally {
+      setLoading(false);
     }
 
     setNfts(items);
   };
 
   useEffect(() => {
-    loadMarketplaceNFTs();
-  }, [marketplace]);
+    if (marketplace && nftContract) {
+      loadMarketplaceNFTs();
+    }
+  }, [marketplace, nftContract]);
 
   const approveNFT = async (tokenId: string) => {
     await nftContract.methods
-      .approve(marketplaceAddress, tokenId)
+      .approve(marketplace.options.address, tokenId)
       .send({ from: account });
   };
 
   const listNFT = async () => {
     if (!priceToList || !tokenIdToList) return;
 
-    const priceWei = web3!.utils.toWei(priceToList, "ether");
+    try {
+      const priceWei = web3!.utils.toWei(priceToList, "ether");
 
-    await approveNFT(tokenIdToList);
+      await approveNFT(tokenIdToList);
 
-    await marketplace.methods
-      .listNFT(nftAddress, tokenIdToList, priceWei)
-      .send({ from: account });
+      await marketplace.methods
+        .list(nftAddress, tokenIdToList, priceWei)
+        .send({ from: account });
 
-    alert("NFT listed!");
-    loadMarketplaceNFTs();
+      alert("NFT listed!");
+      loadMarketplaceNFTs();
+    } catch (err) {
+      console.error(err);
+      alert("List failed: " + (err as Error).message);
+    }
   };
 
   const buyNFT = async (tokenId: number, price: string) => {
-    await marketplace.methods
-      .buyNFT(nftAddress, tokenId)
-      .send({ from: account, value: price });
+    try {
+      await marketplace.methods
+        .buy(nftAddress, tokenId)
+        .send({ from: account, value: price });
 
-    alert("NFT purchased 🎉");
-    loadMarketplaceNFTs();
+      alert("NFT purchased!");
+      loadMarketplaceNFTs();
+    } catch (err) {
+      console.error(err);
+      alert("Purchase failed: " + (err as Error).message);
+    }
   };
 
   const cancelListing = async (tokenId: number) => {
-    await marketplace.methods
-      .cancelListing(nftAddress, tokenId)
-      .send({ from: account });
+    try {
+      await marketplace.methods
+        .cancel(nftAddress, tokenId)
+        .send({ from: account });
 
-    loadMarketplaceNFTs();
+      alert("Listing cancelled!");
+      loadMarketplaceNFTs();
+    } catch (err) {
+      console.error(err);
+      alert("Cancel failed: " + (err as Error).message);
+    }
   };
 
   return (
@@ -165,6 +151,8 @@ const NonFungibleTokenMarket: React.FC = () => {
       <hr />
 
       <h2>Available NFTs</h2>
+
+      {loading && nfts.length === 0 && <p>Loading...</p>}
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
         {nfts.map((nft) => (

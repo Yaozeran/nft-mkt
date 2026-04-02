@@ -2,7 +2,7 @@
 
 ## Phase 1: Fix Code Bugs
 
-### Step 1 - Fix nft.sol Compilation Error & Add totalSupply `[ ]`
+### Step 1 - Fix nft.sol Compilation Error & Add totalSupply `[x]`
 - **Bug:** Event `AssetMinted` declaration (line 33) missing semicolon `)` → `);` — contract won't compile
 - **Missing feature:** `_nextTokenId` is private, frontend can't read it
 - Add `totalSupply()` public function:
@@ -15,7 +15,7 @@
 
 File: `src/contracts/nft.sol`, `src/web/src/services/contracts/nft.ts`
 
-### Step 2 - Fix Frontend Contract Method Names `[ ]`
+### Step 2 - Fix Frontend Contract Method Names `[x]`
 The marketplace component calls wrong method names that don't match the smart contract:
 - `marketplace.methods.listNFT()` → `marketplace.methods.list()`
 - `marketplace.methods.buyNFT()` → `marketplace.methods.buy()`
@@ -24,25 +24,25 @@ The marketplace component calls wrong method names that don't match the smart co
 
 File: `src/web/src/features/market/components/NonFungibleTokenMarket.tsx`
 
-### Step 3 - Fix Token ID Loop (Off-by-One) `[ ]`
+### Step 3 - Fix Token ID Loop (Off-by-One) `[x]`
 Token IDs start at 0 (from `_nextTokenId++`), but the loop starts at 1:
 - `for (let i = 1; i <= totalSupply; i++)` → `for (let i = 0; i < Number(totalSupply); i++)`
 
 File: `src/web/src/features/market/components/NonFungibleTokenMarket.tsx`
 
-### Step 4 - Extract Web3 Context `[ ]`
+### Step 4 - Extract Web3 Context `[x]`
 Mint and Market pages each independently connect to MetaMask (duplicated code).
 - Create shared `Web3Context` at `src/web/src/contexts/Web3Context.tsx`
 - Provide `web3`, `account`, `nftContract`, `marketplaceContract` to all pages
 - Remove duplicated init logic from `NonFungibleTokenForm.tsx` and `NonFungibleTokenMarket.tsx`
 - Also fixes: MintPage was missing `eth_requestAccounts` call
 
-### Step 5 - Fix Header / Footer `[ ]`
+### Step 5 - Fix Header / Footer `[x]`
 - `MarketHeader.tsx`: Currently empty — add project name + wallet address display
 - `MarketFooter.tsx`: Fix component name typo `MartFooter` → `MarketFooter`
 - `MarketLayout.tsx`: Wrap with `<Web3Provider>`
 
-### Step 6 - Add Error Handling & Loading State `[ ]`
+### Step 6 - Add Error Handling & Loading State `[x]`
 - Add try-catch to list/buy/cancel functions in marketplace (currently silent failure)
 - Add loading indicator while marketplace NFTs are being fetched
 

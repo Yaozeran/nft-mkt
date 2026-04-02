@@ -1,16 +1,15 @@
 /* Copyright (c) 2026 Yao Zeran
- * 
+ *
  * The nft mint component*/
 
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import styles from "./NonFungibleTokenForm.module.css"
 
-import Web3 from "web3";
 import axios from "axios";
 
-import { contractAddress, contractABI } from "src/services/contracts/nft";
+import { useWeb3 } from "src/contexts/Web3Context";
 
 
 interface FormData {
@@ -23,9 +22,7 @@ interface FormData {
 
 const NonFungibleTokenForm: React.FC = () => {
 
-  const [web3, setWeb3] = useState<Web3 | null>(null);
-  const [contract, setContract] = useState<any>(null);
-  const [account, setAccount] = useState<string>("");
+  const { web3, account, nftContract: contract } = useWeb3();
   const [formData, setFormData] = useState<FormData>({
     name: "",
     description: "",
@@ -33,21 +30,6 @@ const NonFungibleTokenForm: React.FC = () => {
     file: null,
   });
   const [loading, setLoading] = useState(false);
-  
-  useEffect(() => {
-    const init = async () => {
-      if (!window.ethereum) { 
-        // alert("Please install MetaMask"); 
-      }
-      const web3Instance = new Web3(window.ethereum);
-      const accounts = await web3Instance.eth.getAccounts();
-      const contractInstance = new web3Instance.eth.Contract(contractABI, contractAddress);
-      setWeb3(web3Instance);
-      setContract(contractInstance);
-      setAccount(accounts[0]);
-    }
-    init();
-  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });

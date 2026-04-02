@@ -30,7 +30,7 @@ contract NonFungibleToken is ERC721URIStorage, ERC2981, Pausable, Ownable {
       uint256 indexed tokenId,
       address indexed creator,
       string tokenURI
-    )
+    );
 
 
     constructor(address admin) 
@@ -69,6 +69,11 @@ contract NonFungibleToken is ERC721URIStorage, ERC2981, Pausable, Ownable {
 
     function unpause() external onlyOwner {
         _unpause();
+    }
+
+
+    function totalSupply() external view returns (uint256) {
+        return _nextTokenId;
     }
 
 
