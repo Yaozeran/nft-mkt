@@ -41,7 +41,7 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const init = async () => {
       // Always create read-only contracts via public RPC so NFTs are visible without wallet
-      const SEPOLIA_RPC = "https://rpc.sepolia.org";
+      const SEPOLIA_RPC = "https://ethereum-sepolia-rpc.publicnode.com";
       const readonlyWeb3 = new Web3(SEPOLIA_RPC);
       const readonlyNft = new readonlyWeb3.eth.Contract(nftABI, nftAddress);
       const readonlyMarketplace = new readonlyWeb3.eth.Contract(marketABI, marketAddress);
