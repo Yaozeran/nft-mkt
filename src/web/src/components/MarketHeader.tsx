@@ -16,6 +16,7 @@ const MarketHeader: React.FC = () => {
     { path: "/", label: "Home" },
     { path: "/mint", label: "Create" },
     { path: "/market", label: "Market" },
+    { path: "/my-nfts", label: "My NFTs" },
   ];
 
   return (

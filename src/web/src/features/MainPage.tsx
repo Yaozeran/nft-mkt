@@ -30,6 +30,9 @@ const MainPage: React.FC = () => {
           <Link to="/market" className={styles.ctrlBtnAlt}>
             <span className={styles.btnIcon}>&lt;&gt;</span> Trade NFTs
           </Link>
+          <Link to="/my-nfts" className={styles.ctrlBtnAlt}>
+            <span className={styles.btnIcon}>@</span> My NFTs
+          </Link>
         </div>
       </div>
 

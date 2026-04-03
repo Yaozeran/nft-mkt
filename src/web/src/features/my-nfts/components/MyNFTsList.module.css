@@ -63,8 +63,8 @@
 }
 
 .card:hover {
-  border-color: var(--accent-cyan);
-  box-shadow: 0 0 20px rgba(0, 229, 255, 0.15), 0 0 40px rgba(0, 229, 255, 0.05);
+  border-color: var(--accent-pink);
+  box-shadow: 0 0 20px rgba(255, 45, 120, 0.15), 0 0 40px rgba(255, 45, 120, 0.05);
   transform: translateY(-2px);
 }
 
@@ -106,12 +106,49 @@
   margin: 4px 0;
 }
 
+/* Status badges */
+.statusBadge {
+  font-family: var(--pixel);
+  font-size: 8px;
+  color: #4ade80;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 0 6px;
+}
+
+.statusDot {
+  width: 6px;
+  height: 6px;
+  background: #4ade80;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(74, 222, 128, 0.6);
+  animation: blink 2s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.statusBadgeInactive {
+  font-family: var(--pixel);
+  font-size: 8px;
+  color: #3a3a50;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 10px 0 6px;
+}
+
+/* Price */
 .cardPrice {
   font-family: var(--pixel);
   font-size: 11px;
   color: var(--accent-pink);
   text-shadow: 0 0 10px rgba(255, 45, 120, 0.3);
-  margin: 8px 0;
+  margin: 6px 0;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -125,19 +162,45 @@
   clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
 }
 
-.yourListing {
-  font-family: var(--pixel);
-  font-size: 8px;
-  color: #4a4a60;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+/* Sections */
+.listedSection {
+  border-top: 1px solid #1a1a2e;
+  padding-top: 10px;
+  margin-top: 10px;
+}
+
+.unlistedSection {
+  border-top: 1px solid #1a1a2e;
+  padding-top: 10px;
+  margin-top: 10px;
+}
+
+/* List action */
+.listRow {
+  display: flex;
+  gap: 8px;
   margin-top: 8px;
 }
 
-.buyBtn {
+.listInput {
+  flex: 1;
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 8px 10px;
+  border: 1px solid #2a2a40;
+  background: rgba(10, 10, 18, 0.8);
+  color: var(--text-h);
+  outline: none;
+}
+
+.listInput:focus {
+  border-color: var(--accent-cyan);
+}
+
+.listBtn {
   font-family: var(--pixel);
   font-size: 8px;
-  padding: 10px 20px;
+  padding: 8px 16px;
   border: 1px solid var(--accent-cyan);
   background: transparent;
   color: var(--accent-cyan);
@@ -145,16 +208,36 @@
   text-transform: uppercase;
   transition: all 0.2s;
   clip-path: none;
-  width: 100%;
-  margin-top: 8px;
+  white-space: nowrap;
 }
 
-.buyBtn:hover {
+.listBtn:hover {
   background: var(--accent-cyan);
   color: #0a0a12;
   box-shadow: var(--glow-cyan);
 }
 
+.cancelBtn {
+  font-family: var(--pixel);
+  font-size: 8px;
+  padding: 8px 16px;
+  border: 1px solid #ff4444;
+  background: transparent;
+  color: #ff4444;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  clip-path: none;
+  width: 100%;
+  margin-top: 6px;
+}
+
+.cancelBtn:hover {
+  background: #ff4444;
+  color: #fff;
+}
+
+/* Loading & empty */
 .loading {
   font-family: var(--pixel);
   font-size: 10px;

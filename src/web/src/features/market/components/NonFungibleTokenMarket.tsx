@@ -1,6 +1,6 @@
 /* Copyright (c) 2026 Yao Zeran
  *
- * The marketplace component */
+ * The marketplace component - displays listed NFTs for buying */
 
 import React, { useEffect, useState } from "react";
 
@@ -15,7 +15,6 @@ interface NFTItem {
   owner: string;
   price: string;
   seller: string;
-  isListed: boolean;
   metadata?: any;
 }
 
@@ -24,7 +23,6 @@ const NonFungibleTokenMarket: React.FC = () => {
 
   const { web3, account, nftContract, marketplaceContract: marketplace } = useWeb3();
   const [nfts, setNfts] = useState<NFTItem[]>([]);
-  const [priceInputs, setPriceInputs] = useState<Record<number, string>>({});
   const [loading, setLoading] = useState(false);
 
   const fetchMetadata = async (tokenURI: string) => {
@@ -36,8 +34,7 @@ const NonFungibleTokenMarket: React.FC = () => {
     }
   };
 
-  const loadAllNFTs = async () => {
-
+  const loadListedNFTs = async () => {
     if (!marketplace || !nftContract) return;
 
     setLoading(true);
@@ -48,10 +45,6 @@ const NonFungibleTokenMarket: React.FC = () => {
 
       for (let i = 0; i < Number(totalSupply); i++) {
         try {
-          const owner = await nftContract.methods.ownerOf(i).call();
-          const tokenURI = await nftContract.methods.tokenURI(i).call();
-          const metadata = await fetchMetadata(tokenURI);
-
           const listing = await marketplace.methods
             .listings(nftAddress, i)
             .call();
@@ -59,12 +52,17 @@ const NonFungibleTokenMarket: React.FC = () => {
           const price = listing.price.toString();
           const isListed = BigInt(price) > 0n;
 
+          if (!isListed) continue;
+
+          const owner = await nftContract.methods.ownerOf(i).call();
+          const tokenURI = await nftContract.methods.tokenURI(i).call();
+          const metadata = await fetchMetadata(tokenURI);
+
           items.push({
             tokenId: i,
             owner,
             price,
             seller: listing.seller,
-            isListed,
             metadata,
           });
         } catch (err) {
@@ -82,77 +80,43 @@ const NonFungibleTokenMarket: React.FC = () => {
 
   useEffect(() => {
     if (marketplace && nftContract) {
-      loadAllNFTs();
+      loadListedNFTs();
     }
   }, [marketplace, nftContract]);
 
-  const listNFT = async (tokenId: number) => {
-    const price = priceInputs[tokenId];
-    if (!price) {
-      alert("Please enter a price");
+  const buyNFT = async (tokenId: number, price: string) => {
+    if (!account) {
+      alert("Please connect your wallet to buy NFTs");
       return;
     }
-
-    try {
-      const priceWei = web3!.utils.toWei(price, "ether");
-
-      await nftContract.methods
-        .approve(marketplace.options.address, tokenId)
-        .send({ from: account });
-
-      await marketplace.methods
-        .list(nftAddress, tokenId, priceWei)
-        .send({ from: account });
-
-      alert("NFT listed!");
-      loadAllNFTs();
-    } catch (err) {
-      console.error("List failed:", err);
-      alert("List failed: " + (err as Error).message);
-    }
-  };
-
-  const buyNFT = async (tokenId: number, price: string) => {
     try {
       await marketplace.methods
         .buy(nftAddress, tokenId)
         .send({ from: account, value: price });
 
       alert("NFT purchased!");
-      loadAllNFTs();
+      loadListedNFTs();
     } catch (err) {
       console.error(err);
       alert("Purchase failed: " + (err as Error).message);
     }
   };
 
-  const cancelListing = async (tokenId: number) => {
-    try {
-      await marketplace.methods
-        .cancel(nftAddress, tokenId)
-        .send({ from: account });
-
-      alert("Listing cancelled!");
-      loadAllNFTs();
-    } catch (err) {
-      console.error(err);
-      alert("Cancel failed: " + (err as Error).message);
-    }
-  };
-
-  const isMyNFT = (nft: NFTItem) =>
-    account && nft.owner.toLowerCase() === account.toLowerCase();
-
   const isMySelling = (nft: NFTItem) =>
     account && nft.seller.toLowerCase() === account.toLowerCase();
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>NFT Marketplace</h1>
+      <h1 className={styles.title}>Marketplace</h1>
 
-      {loading && <p className={styles.loading}>Loading NFTs...</p>}
+      {loading && <p className={styles.loading}>Loading listings...</p>}
 
-      <h2 className={styles.sectionTitle}>All NFTs</h2>
+      {!loading && nfts.length > 0 && (
+        <h2 className={styles.sectionTitle}>
+          For Sale ({nfts.length})
+        </h2>
+      )}
+
       <div className={styles.grid}>
         {nfts.map((nft) => (
           <div key={nft.tokenId} className={styles.card}>
@@ -173,57 +137,23 @@ const NonFungibleTokenMarket: React.FC = () => {
               )}
               <p className={styles.cardMeta}>ID: #{nft.tokenId}</p>
               <p className={styles.cardMeta}>
-                Owner: {isMyNFT(nft) ? "You" : `${nft.owner.slice(0, 6)}...${nft.owner.slice(-4)}`}
+                Seller: {isMySelling(nft) ? "You" : `${nft.seller.slice(0, 6)}...${nft.seller.slice(-4)}`}
               </p>
 
-              {nft.isListed ? (
-                <>
-                  <div className={styles.cardPrice}>
-                    <span className={styles.cardPriceIcon} />
-                    {web3?.utils.fromWei(nft.price, "ether")} ETH
-                  </div>
-                  <p className={styles.sellerInfo}>
-                    Seller: {isMySelling(nft) ? "You" : `${nft.seller.slice(0, 6)}...${nft.seller.slice(-4)}`}
-                  </p>
+              <div className={styles.cardPrice}>
+                <span className={styles.cardPriceIcon} />
+                {web3?.utils.fromWei(nft.price, "ether")} ETH
+              </div>
 
-                  {isMySelling(nft) ? (
-                    <button
-                      className={styles.cancelBtn}
-                      onClick={() => cancelListing(nft.tokenId)}
-                    >
-                      Cancel
-                    </button>
-                  ) : (
-                    <button
-                      className={styles.buyBtn}
-                      onClick={() => buyNFT(nft.tokenId, nft.price)}
-                    >
-                      Buy NFT
-                    </button>
-                  )}
-                </>
+              {isMySelling(nft) ? (
+                <p className={styles.yourListing}>Your listing</p>
               ) : (
-                <>
-                  <p className={styles.notListed}>Not Listed</p>
-                  {isMyNFT(nft) && (
-                    <div className={styles.listRow}>
-                      <input
-                        className={styles.listInput}
-                        placeholder="Price (ETH)"
-                        value={priceInputs[nft.tokenId] || ""}
-                        onChange={(e) =>
-                          setPriceInputs({ ...priceInputs, [nft.tokenId]: e.target.value })
-                        }
-                      />
-                      <button
-                        className={styles.cardBtn}
-                        onClick={() => listNFT(nft.tokenId)}
-                      >
-                        List
-                      </button>
-                    </div>
-                  )}
-                </>
+                <button
+                  className={styles.buyBtn}
+                  onClick={() => buyNFT(nft.tokenId, nft.price)}
+                >
+                  Buy NFT
+                </button>
               )}
             </div>
           </div>
@@ -231,7 +161,7 @@ const NonFungibleTokenMarket: React.FC = () => {
       </div>
 
       {!loading && nfts.length === 0 && (
-        <p className={styles.empty}>No NFTs minted yet.</p>
+        <p className={styles.empty}>No NFTs listed for sale.</p>
       )}
     </div>
   );
