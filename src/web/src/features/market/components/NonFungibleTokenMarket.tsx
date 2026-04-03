@@ -4,6 +4,8 @@
 
 import React, { useEffect, useState } from "react";
 
+import styles from "./NonFungibleTokenMarket.module.css";
+
 import { useWeb3 } from "src/contexts/Web3Context";
 import { contractAddress as nftAddress } from "src/services/contracts/nft";
 
@@ -145,62 +147,92 @@ const NonFungibleTokenMarket: React.FC = () => {
     account && nft.seller.toLowerCase() === account.toLowerCase();
 
   return (
-    <div style={{ maxWidth: 900, margin: "auto" }}>
-      <h1>NFT Marketplace</h1>
+    <div className={styles.container}>
+      <h1 className={styles.title}>NFT Marketplace</h1>
 
-      {loading && <p>Loading NFTs...</p>}
+      {loading && <p className={styles.loading}>Loading NFTs...</p>}
 
-      <h2>All NFTs</h2>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
+      <h2 className={styles.sectionTitle}>All NFTs</h2>
+      <div className={styles.grid}>
         {nfts.map((nft) => (
-          <div key={nft.tokenId} style={{ border: "1px solid #ccc", padding: 10, borderRadius: 8 }}>
+          <div key={nft.tokenId} className={styles.card}>
             {nft.metadata?.image && (
-              <img src={nft.metadata.image} width="100%" style={{ borderRadius: 4 }} />
+              <img
+                src={nft.metadata.image}
+                className={styles.cardImage}
+                alt={nft.metadata?.name || `Token #${nft.tokenId}`}
+              />
             )}
 
-            <h3>{nft.metadata?.name || `Token #${nft.tokenId}`}</h3>
-            <p>{nft.metadata?.description}</p>
-            <p>Token ID: {nft.tokenId}</p>
-            <p>Owner: {isMyNFT(nft) ? "You" : `${nft.owner.slice(0, 6)}...${nft.owner.slice(-4)}`}</p>
+            <div className={styles.cardBody}>
+              <h3 className={styles.cardName}>
+                {nft.metadata?.name || `Token #${nft.tokenId}`}
+              </h3>
+              {nft.metadata?.description && (
+                <p className={styles.cardDesc}>{nft.metadata.description}</p>
+              )}
+              <p className={styles.cardMeta}>ID: #{nft.tokenId}</p>
+              <p className={styles.cardMeta}>
+                Owner: {isMyNFT(nft) ? "You" : `${nft.owner.slice(0, 6)}...${nft.owner.slice(-4)}`}
+              </p>
 
-            {nft.isListed ? (
-              <>
-                <p><strong>Price: {web3?.utils.fromWei(nft.price, "ether")} ETH</strong></p>
-                <p>Seller: {isMySelling(nft) ? "You" : `${nft.seller.slice(0, 6)}...${nft.seller.slice(-4)}`}</p>
-
-                {isMySelling(nft) ? (
-                  <button onClick={() => cancelListing(nft.tokenId)}>
-                    Cancel Listing
-                  </button>
-                ) : (
-                  <button onClick={() => buyNFT(nft.tokenId, nft.price)}>
-                    Buy NFT
-                  </button>
-                )}
-              </>
-            ) : (
-              <>
-                <p style={{ color: "#888" }}>Not Listed</p>
-                {isMyNFT(nft) && (
-                  <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-                    <input
-                      placeholder="Price (ETH)"
-                      value={priceInputs[nft.tokenId] || ""}
-                      onChange={(e) =>
-                        setPriceInputs({ ...priceInputs, [nft.tokenId]: e.target.value })
-                      }
-                      style={{ flex: 1 }}
-                    />
-                    <button onClick={() => listNFT(nft.tokenId)}>List</button>
+              {nft.isListed ? (
+                <>
+                  <div className={styles.cardPrice}>
+                    <span className={styles.cardPriceIcon} />
+                    {web3?.utils.fromWei(nft.price, "ether")} ETH
                   </div>
-                )}
-              </>
-            )}
+                  <p className={styles.sellerInfo}>
+                    Seller: {isMySelling(nft) ? "You" : `${nft.seller.slice(0, 6)}...${nft.seller.slice(-4)}`}
+                  </p>
+
+                  {isMySelling(nft) ? (
+                    <button
+                      className={styles.cancelBtn}
+                      onClick={() => cancelListing(nft.tokenId)}
+                    >
+                      Cancel
+                    </button>
+                  ) : (
+                    <button
+                      className={styles.buyBtn}
+                      onClick={() => buyNFT(nft.tokenId, nft.price)}
+                    >
+                      Buy NFT
+                    </button>
+                  )}
+                </>
+              ) : (
+                <>
+                  <p className={styles.notListed}>Not Listed</p>
+                  {isMyNFT(nft) && (
+                    <div className={styles.listRow}>
+                      <input
+                        className={styles.listInput}
+                        placeholder="Price (ETH)"
+                        value={priceInputs[nft.tokenId] || ""}
+                        onChange={(e) =>
+                          setPriceInputs({ ...priceInputs, [nft.tokenId]: e.target.value })
+                        }
+                      />
+                      <button
+                        className={styles.cardBtn}
+                        onClick={() => listNFT(nft.tokenId)}
+                      >
+                        List
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         ))}
       </div>
 
-      {!loading && nfts.length === 0 && <p>No NFTs minted yet.</p>}
+      {!loading && nfts.length === 0 && (
+        <p className={styles.empty}>No NFTs minted yet.</p>
+      )}
     </div>
   );
 };

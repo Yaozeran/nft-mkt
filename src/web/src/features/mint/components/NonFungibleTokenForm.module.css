@@ -1,8 +1,122 @@
 .container {
-  width: 200px;
-  height: auto;
-
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 2rem;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  gap: 16px;
+}
+
+.title {
+  font-family: var(--pixel);
+  font-size: 14px;
+  color: var(--text-h);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 0 20px rgba(255, 45, 120, 0.5);
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-family: var(--pixel);
+  font-size: 8px;
+  color: var(--accent-cyan);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.input {
+  font-family: var(--mono);
+  font-size: 13px;
+  padding: 12px 14px;
+  border: 1px solid #2a2a40;
+  background: rgba(10, 10, 18, 0.8);
+  color: var(--text-h);
+  outline: none;
+  transition: all 0.2s;
+}
+
+.input:focus {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.15);
+}
+
+.textarea {
+  composes: input;
+  min-height: 100px;
+  resize: vertical;
+}
+
+.fileUpload {
+  position: relative;
+  border: 2px dashed #2a2a40;
+  padding: 2rem;
+  text-align: center;
+  transition: all 0.2s;
+  cursor: pointer;
+  background: rgba(10, 10, 18, 0.5);
+}
+
+.fileUpload:hover {
+  border-color: var(--accent-pink);
+}
+
+.fileLabel {
+  font-family: var(--pixel);
+  font-size: 8px;
+  color: #4a4a60;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: block;
+  cursor: pointer;
+}
+
+.fileLabelActive {
+  composes: fileLabel;
+  color: var(--accent-cyan);
+}
+
+.fileInput {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.mintBtn {
+  font-family: var(--pixel);
+  font-size: 11px;
+  padding: 16px 32px;
+  border: 2px solid var(--accent-pink);
+  background: var(--accent-pink);
+  color: #fff;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  transition: all 0.2s;
+  margin-top: 1rem;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  box-shadow: var(--glow-pink);
+}
+
+.mintBtn:hover {
+  background: transparent;
+  color: var(--accent-pink);
+}
+
+.mintBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.mintBtn:disabled:hover {
+  background: var(--accent-pink);
+  color: #fff;
 }

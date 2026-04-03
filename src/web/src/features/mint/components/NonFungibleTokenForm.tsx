@@ -97,8 +97,6 @@ const NonFungibleTokenForm: React.FC = () => {
         .mintAsset(metadataUrl, royaltyBasisPoints)
         .send({ from: account });
 
-      // alert("NFT Minted Successfully");
-
       setFormData({
         name: "",
         description: "",
@@ -116,34 +114,62 @@ const NonFungibleTokenForm: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <h2>Register Digital Asset as Non-fungible Token</h2>
+      <h2 className={styles.title}>Create Your NFT</h2>
 
-      <input
-        id="name"
-        placeholder="Asset Name"
-        value={formData.name}
-        onChange={handleChange}
-      />
+      <div className={styles.formGroup}>
+        <label className={styles.label}>Asset Name</label>
+        <input
+          className={styles.input}
+          id="name"
+          placeholder="Enter asset name"
+          value={formData.name}
+          onChange={handleChange}
+        />
+      </div>
 
-      <textarea
-        id="description"
-        placeholder="Description"
-        value={formData.description}
-        onChange={handleChange}
-      />
+      <div className={styles.formGroup}>
+        <label className={styles.label}>Description</label>
+        <textarea
+          className={styles.textarea}
+          id="description"
+          placeholder="Describe your NFT"
+          value={formData.description}
+          onChange={handleChange}
+        />
+      </div>
 
-      <input
-        type="number"
-        id="royalty"
-        placeholder="Royalty %"
-        value={formData.royalty}
-        onChange={handleChange}
-      />
+      <div className={styles.formGroup}>
+        <label className={styles.label}>Royalty %</label>
+        <input
+          className={styles.input}
+          type="number"
+          id="royalty"
+          placeholder="Royalty %"
+          value={formData.royalty}
+          onChange={handleChange}
+        />
+      </div>
 
-      <input type="file" onChange={handleFileChange} />
+      <div className={styles.formGroup}>
+        <label className={styles.label}>Upload File</label>
+        <div className={styles.fileUpload}>
+          <span className={formData.file ? styles.fileLabelActive : styles.fileLabel}>
+            {formData.file ? formData.file.name : "Click to upload file"}
+          </span>
+          <input
+            className={styles.fileInput}
+            type="file"
+            onChange={handleFileChange}
+          />
+        </div>
+      </div>
 
-      <button onClick={mintNonFungibleToken} disabled={loading}>
-        {loading ? "Minting..." : "Mint"}
+      <button
+        className={styles.mintBtn}
+        onClick={mintNonFungibleToken}
+        disabled={loading}
+      >
+        {loading ? "Minting..." : "Mint NFT"}
       </button>
     </div>
   )

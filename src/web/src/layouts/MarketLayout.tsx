@@ -1,6 +1,6 @@
 /* Copyright (c) 2026 Yao Zeran
- * 
- * The market layout file defines the layout for market related pages, where 
+ *
+ * The market layout file defines the layout for market related pages, where
  *   user trade the tokens */
 
 
@@ -16,9 +16,15 @@ import MarketFooter from "../components/MarketFooter";
 const MarketLayout: React.FC = () => {
   return (
     <Web3Provider>
-      <div>
+      <div style={{
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "100vh",
+      }}>
         <MarketHeader />
-        <Outlet />
+        <div style={{ flex: 1 }}>
+          <Outlet />
+        </div>
         <MarketFooter />
       </div>
     </Web3Provider>
