@@ -40,18 +40,33 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     const init = async () => {
+      // Always create read-only contracts via public RPC so NFTs are visible without wallet
+      const SEPOLIA_RPC = "https://rpc.sepolia.org";
+      const readonlyWeb3 = new Web3(SEPOLIA_RPC);
+      const readonlyNft = new readonlyWeb3.eth.Contract(nftABI, nftAddress);
+      const readonlyMarketplace = new readonlyWeb3.eth.Contract(marketABI, marketAddress);
+
+      setWeb3(readonlyWeb3);
+      setNftContract(readonlyNft);
+      setMarketplaceContract(readonlyMarketplace);
+
+      // If MetaMask is available, upgrade to connected wallet for write operations
       if (window.ethereum) {
-        await window.ethereum.request({ method: "eth_requestAccounts" });
-        const web3Instance = new Web3(window.ethereum);
-        const accounts = await web3Instance.eth.getAccounts();
+        try {
+          await window.ethereum.request({ method: "eth_requestAccounts" });
+          const walletWeb3 = new Web3(window.ethereum);
+          const accounts = await walletWeb3.eth.getAccounts();
 
-        const nft = new web3Instance.eth.Contract(nftABI, nftAddress);
-        const marketplace = new web3Instance.eth.Contract(marketABI, marketAddress);
+          const nft = new walletWeb3.eth.Contract(nftABI, nftAddress);
+          const marketplace = new walletWeb3.eth.Contract(marketABI, marketAddress);
 
-        setWeb3(web3Instance);
-        setAccount(accounts[0]);
-        setNftContract(nft);
-        setMarketplaceContract(marketplace);
+          setWeb3(walletWeb3);
+          setAccount(accounts[0]);
+          setNftContract(nft);
+          setMarketplaceContract(marketplace);
+        } catch (err) {
+          console.error("Wallet connection failed, using read-only mode:", err);
+        }
       }
     };
 
