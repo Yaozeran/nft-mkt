@@ -3,7 +3,7 @@
  * The ntf smart contract related logic of ntf.sol */
 
 
-export const contractAddress = "0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8";
+export const contractAddress = "0xDBf525e6c61c6A6974D92fd12CE263c8fBff4efB";
 export const contractABI = [
   {
     "inputs": [

@@ -3,7 +3,7 @@
  * The market smart contract related logic of market.sol */
 
 
-export const contractAddress = "0xd9145CCE52D386f254917e481eB44e9943F39138";
+export const contractAddress = "0x618080A6aCdD8A9CEeFad1E22063034e00879339";
 export const contractABI = [
 	{
 		"inputs": [
