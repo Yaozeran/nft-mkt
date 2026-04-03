@@ -9,7 +9,7 @@ import { useWeb3 } from "src/contexts/Web3Context";
 
 
 const MarketHeader: React.FC = () => {
-  const { account } = useWeb3();
+  const { account, connectWallet, disconnectWallet, isConnecting } = useWeb3();
   const location = useLocation();
 
   const navItems = [
@@ -64,20 +64,78 @@ const MarketHeader: React.FC = () => {
         ))}
       </nav>
 
-      <div style={{
-        fontFamily: "var(--mono)",
-        fontSize: "11px",
-        padding: "6px 14px",
-        border: account ? "1px solid var(--accent-cyan)" : "1px solid #2a2a40",
-        color: account ? "var(--accent-cyan)" : "#4a4a60",
-        background: "rgba(0, 229, 255, 0.05)",
-        clipPath: "polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px))",
-      }}>
-        {account
-          ? `${account.slice(0, 6)}...${account.slice(-4)}`
-          : "NOT CONNECTED"
-        }
-      </div>
+      {account ? (
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <div style={{
+            fontFamily: "var(--mono)",
+            fontSize: "11px",
+            padding: "6px 14px",
+            border: "1px solid var(--accent-cyan)",
+            color: "var(--accent-cyan)",
+            background: "rgba(0, 229, 255, 0.05)",
+            clipPath: "polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px))",
+          }}>
+            {`${account.slice(0, 6)}...${account.slice(-4)}`}
+          </div>
+          <button
+            onClick={disconnectWallet}
+            style={{
+              fontFamily: "var(--pixel)",
+              fontSize: "7px",
+              padding: "6px 12px",
+              border: "1px solid #ff4444",
+              background: "transparent",
+              color: "#ff4444",
+              cursor: "pointer",
+              textTransform: "uppercase",
+              letterSpacing: "1px",
+              transition: "all 0.2s",
+              clipPath: "none",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "#ff4444";
+              e.currentTarget.style.color = "#fff";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "transparent";
+              e.currentTarget.style.color = "#ff4444";
+            }}
+          >
+            Disconnect
+          </button>
+        </div>
+      ) : (
+        <button
+          onClick={connectWallet}
+          disabled={isConnecting}
+          style={{
+            fontFamily: "var(--pixel)",
+            fontSize: "8px",
+            padding: "8px 16px",
+            border: "1px solid var(--accent-cyan)",
+            background: "transparent",
+            color: "var(--accent-cyan)",
+            cursor: isConnecting ? "not-allowed" : "pointer",
+            textTransform: "uppercase",
+            letterSpacing: "1px",
+            transition: "all 0.2s",
+            clipPath: "polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px))",
+            opacity: isConnecting ? 0.5 : 1,
+          }}
+          onMouseEnter={(e) => {
+            if (!isConnecting) {
+              e.currentTarget.style.background = "var(--accent-cyan)";
+              e.currentTarget.style.color = "#0a0a12";
+            }
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "transparent";
+            e.currentTarget.style.color = "var(--accent-cyan)";
+          }}
+        >
+          {isConnecting ? "Connecting..." : "Connect Wallet"}
+        </button>
+      )}
     </header>
   );
 };
