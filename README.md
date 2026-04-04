@@ -2,17 +2,28 @@
 
 SC6106 Blockchain Development Fundamentals - Group Project
 
-A decentralized NFT marketplace where users can mint, list, buy, and transfer NFTs on the Ethereum Sepolia testnet.
+A decentralized NFT marketplace where users can mint, list, buy, and manage NFTs on the Ethereum Sepolia testnet.
+
+## Live Demo on Sepolia Testnet with Render Deployment
+
+**URL**:
+
+- https://nft-mkt.onrender.com
+
+**Contract Address**:
+
+- NonFungibleToken: 0xDBf525e6c61c6A6974D92fd12CE263c8fBff4efB
+- NonFungibleTokenMarketplace: 0x618080A6aCdD8A9CEeFad1E22063034e00879339
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Smart Contracts | Solidity 0.8.20, OpenZeppelin v5 |
-| Frontend | React 19, TypeScript, Vite 8 |
-| Web3 | web3.js 4, MetaMask |
-| File Storage | Pinata (IPFS) |
-| Deployment | Remix (contracts), Render (frontend) |
+| Layer           | Technology                           |
+| --------------- | ------------------------------------ |
+| Smart Contracts | Solidity 0.8.20, OpenZeppelin v5     |
+| Frontend        | React 19, TypeScript, Vite 8         |
+| Web3            | web3.js 4, MetaMask                  |
+| File Storage    | Pinata (IPFS)                        |
+| Deployment      | Remix (contracts), Render (frontend) |
 
 ## Project Structure
 
@@ -27,10 +38,9 @@ nft-mkt/
 │           ├── routes/              # Page routing
 │           ├── layouts/             # Shared layout (header/footer)
 │           ├── components/          # Reusable components
-│           ├── features/            # Pages: MainPage, Mint, Market
+│           ├── features/            # Pages: MainPage, Mint, Market, My NFTs
 │           ├── services/contracts/  # Contract ABIs and addresses
 │           └── types/               # TypeScript type definitions
-├── what_to_do.md                    # Action plan & task checklist
 └── README.md
 ```
 
@@ -102,12 +112,13 @@ Open http://localhost:5173 in your browser.
 
 ## Usage
 
-| Feature | Description |
-|---------|-------------|
-| **Mint** | Upload an image, set name/description/royalty, mint as ERC721 NFT |
-| **List** | Put your NFT on the marketplace with a price |
-| **Buy** | Purchase a listed NFT (payment in SepoliaETH) |
-| **Cancel** | Remove your NFT listing from the marketplace |
+| Feature    | Description                                                       |
+| ---------- | ----------------------------------------------------------------- |
+| **Mint**   | Upload an image, set name/description/royalty, mint as ERC721 NFT |
+| **List**   | Put your NFT on the marketplace with a price                      |
+| **Buy**    | Purchase a listed NFT (payment in SepoliaETH)                     |
+| **Cancel** | Remove your NFT listing from the marketplace                      |
+| **My NFTs** | View NFTs you own or are currently selling, and manage listings  |
 
 ## Network
 
